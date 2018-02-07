@@ -2,4 +2,6 @@
 open System.IO;
 open  Signals.Generator
 
-writeFiles (Path.Combine (__SOURCE_DIRECTORY__, "example")) (Some "MyNamespace") (Some "UnityEngine") "AudioClip"
+let output = Path.Combine (__SOURCE_DIRECTORY__, "example")
+Directory.CreateDirectory output
+writeFiles output (Some "MyNamespace") (Some "UnityEngine") "AudioClip"
