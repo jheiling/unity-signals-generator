@@ -5,7 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="Generator.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="example.fsx" />
   </ItemGroup>
 
 </Project>

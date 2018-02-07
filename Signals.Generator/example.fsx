@@ -2,4 +2,4 @@
 open System.IO;
 open  Signals.Generator
 
-writeFiles (Path.Combine (__SOURCE_DIRECTORY__, "test")) (Some "Signals.Common") None "int"
+writeFiles (Path.Combine (__SOURCE_DIRECTORY__, "example")) (Some "Signals.Common") None "int"
