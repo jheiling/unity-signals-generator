@@ -10,7 +10,7 @@ let firstToUpper text =
     then text
     else Char.ToString (Char.ToUpper text.[0]) + if String.length text > 1 then text.Substring(1) else String.Empty
 
-let toLines code namesp typeNamesp typeName imports =
+let lines imports code namesp typeNamesp typeName =
     let imports =
         match typeNamesp with 
         | Some n -> if List.contains n imports then imports else imports @ [n]
@@ -23,7 +23,7 @@ let toLines code namesp typeNamesp typeName imports =
      | None -> code typeName)
 
 let writeFile className imports code folder namesp typeNamesp typeName = 
-    let contents = toLines code namesp typeNamesp typeName imports
+    let contents = lines imports code namesp typeNamesp typeName
     File.WriteAllLines (Path.Combine (folder, className typeName + ".cs"), List.toArray contents)
 
 
