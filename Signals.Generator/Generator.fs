@@ -10,19 +10,14 @@ let firstToUpper text =
     then text
     else Char.ToString (Char.ToUpper text.[0]) + if String.length text > 1 then text.Substring(1) else String.Empty
 
-let appendUnique item list =
-    if List.contains item list 
-    then list 
-    else List.append list [item]
-
 let toLines code namesp typeNamesp typeName imports =
     let imports =
         match typeNamesp with 
-        | Some n -> appendUnique n imports 
+        | Some n -> if List.contains n imports then imports else imports @ [n]
         | None -> imports
     (if List.isEmpty imports 
      then [] 
-     else List.append (List.map (sprintf "using %s;") imports) [""; ""; ""]) @
+     else (List.map (sprintf "using %s;") imports) @ [""; ""; ""]) @
     (match namesp with 
      | Some n -> [sprintf "namespace %s" n; "{"] @ List.map (sprintf "    %s") (code typeName) @ ["}"] 
      | None -> code typeName)
