@@ -48,13 +48,7 @@ module Signals =
 
     let code typeName = [
         sprintf "[CreateAssetMenu(menuName = \"Signals/%s\")]" (className typeName)
-        sprintf "public class %s : Signal<%s, %s>" (className typeName) typeName (Events.className typeName)
-        "{"
-        sprintf "    protected override bool ValidateValue(%s value)" typeName
-        "    {"
-        "        return Value != value;"
-        "    }"
-        "}"]
+        sprintf "public class %s : Signal<%s, %s> { }" (className typeName) typeName (Events.className typeName)]
 
     let writeFile = writeFile className imports code
 
