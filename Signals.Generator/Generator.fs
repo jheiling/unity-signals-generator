@@ -10,11 +10,7 @@ let firstToUpper text =
     then text
     else Char.ToString (Char.ToUpper text.[0]) + if String.length text > 1 then text.Substring(1) else String.Empty
 
-let lines imports code namesp typeNamesp typeName =
-    let imports =
-        match typeNamesp with 
-        | Some n -> if List.contains n imports then imports else imports @ [n]
-        | None -> imports
+let lines imports code namesp typeName =
     (if List.isEmpty imports 
      then [] 
      else (List.map (sprintf "using %s;") imports) @ [""; ""; ""]) @
@@ -22,8 +18,8 @@ let lines imports code namesp typeNamesp typeName =
      | Some n -> [sprintf "namespace %s" n; "{"] @ List.map (sprintf "    %s") (code typeName) @ ["}"] 
      | None -> code typeName)
 
-let writeFile className imports code folder namesp typeNamesp typeName = 
-    let contents = lines imports code namesp typeNamesp typeName
+let writeFile className imports code folder namesp typeName = 
+    let contents = lines imports code namesp typeName
     File.WriteAllLines (Path.Combine (folder, className typeName + ".cs"), List.toArray contents)
 
 
@@ -37,7 +33,12 @@ module Events =
         "[Serializable]"
         sprintf "public class %s : UnityEvent<%s> { }" (className typeName) typeName]
 
-    let writeFile = writeFile className imports code
+    let writeFile folder namesp typeNamesp typeName = 
+        let imports =
+            match typeNamesp with 
+            | Some n -> if List.contains n imports then imports else imports @ [n]
+            | None -> imports
+        writeFile className imports code folder namesp typeName
 
 
 
@@ -50,7 +51,12 @@ module Signals =
         sprintf "[CreateAssetMenu(menuName = \"Signals/%s\")]" (className typeName)
         sprintf "public class %s : Signal<%s, %s> { }" (className typeName) typeName (Events.className typeName)]
 
-    let writeFile = writeFile className imports code
+    let writeFile folder namesp typeNamesp typeName = 
+        let imports =
+            match typeNamesp with 
+            | Some n -> if List.contains n imports then imports else imports @ [n]
+            | None -> imports
+        writeFile className imports code folder namesp typeName
 
 
 
@@ -69,7 +75,12 @@ module SignalEditors =
         "    }"
         "}"]
 
-    let writeFile = writeFile className imports code
+    let writeFile folder namesp typeNamesp typeName = 
+        let imports =
+            match typeNamesp with 
+            | Some n -> if List.contains n imports then imports else imports @ [n]
+            | None -> imports
+        writeFile className imports code folder namesp typeName
 
 
 
@@ -82,7 +93,12 @@ module SignalListeners =
         sprintf "[AddComponentMenu(\"Signals/%s\")]" (className typeName)
         sprintf "public class %s : SignalListener<%s, %s, %s> { }" (className typeName) typeName (Events.className typeName) (Signals.className typeName)]
 
-    let writeFile = writeFile className imports code
+    let writeFile folder namesp typeNamesp typeName = 
+        let imports =
+            match typeNamesp with 
+            | Some n -> if List.contains n imports then imports else imports @ [n]
+            | None -> imports
+        writeFile className imports code folder namesp typeName
 
 
 
@@ -99,7 +115,12 @@ module ValueReferences =
         sprintf "public %s(%s localValue) : base(localValue) { }" (className typeName) typeName
         "}"]
 
-    let writeFile = writeFile className imports code
+    let writeFile folder namesp typeNamesp typeName = 
+        let imports =
+            match typeNamesp with 
+            | Some n -> if List.contains n imports then imports else imports @ [n]
+            | None -> imports
+        writeFile className imports code folder namesp typeName
 
 
 
@@ -122,4 +143,4 @@ let writeFiles folder namesp typeNamesp typeName =
     SignalEditors.writeFile folder namesp typeNamesp typeName
     SignalListeners.writeFile folder namesp typeNamesp typeName
     ValueReferences.writeFile folder namesp typeNamesp typeName
-    ValueReferenceDrawers.writeFile folder namesp typeNamesp typeName
+    ValueReferenceDrawers.writeFile folder namesp typeName
