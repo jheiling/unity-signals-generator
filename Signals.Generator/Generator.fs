@@ -63,10 +63,9 @@ module SignalEditors =
         sprintf "[CustomEditor(typeof(%s))]" (Signals.className typeName)
         sprintf "public class %s : SignalEditor<%s, %s>" (className typeName) typeName (Events.className typeName)
         "{"
-        sprintf "    protected override void ValueField(Signal<%s, %s> signal)" typeName (Events.className typeName)
+        sprintf "    protected override %s ValueField(%s value)" typeName typeName
         "    {"
-        "        var value = //TODO(signal);"
-        "        if (value != signal) signal.Value = value;"
+        "        return /*TODO*/(value);"
         "    }"
         "}"]
 
@@ -94,7 +93,11 @@ module ValueReferences =
 
     let code typeName = [
         "[Serializable]"
-        sprintf "public class %s : ValueReference<%s, %s, %s> { }" (className typeName) typeName (Events.className typeName) (Signals.className typeName)]
+        sprintf "public class %s : ValueReference<%s, %s, %s>" (className typeName) typeName (Events.className typeName) (Signals.className typeName)
+        "{"
+        sprintf "public %s() { }" (className typeName)
+        sprintf "public %s(%s localValue) : base(localValue) { }" (className typeName) typeName
+        "}"]
 
     let writeFile = writeFile className imports code
 
