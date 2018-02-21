@@ -4,4 +4,4 @@ open  Signals.Generator
 
 let directory = Path.Combine (__SOURCE_DIRECTORY__, "example")
 Directory.CreateDirectory directory
-writeFiles directory (Some "MyNamespace") (Some "UnityEngine") "AudioClip"
+writeFiles (Some "UnityEngine") "AudioClip" (Some "MyNamespace") directory

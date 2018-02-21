@@ -6,26 +6,22 @@ open System.IO
 
 
 let firstToUpper text =
-    if String.IsNullOrWhiteSpace text
-    then text
-    else Char.ToString (Char.ToUpper text.[0]) + if String.length text > 1 then text.Substring(1) else String.Empty
+    if String.IsNullOrWhiteSpace text then text
+    else Char.ToString (Char.ToUpper text.[0]) + if text.Length > 1 then text.Substring 1 else String.Empty
 
-let appendImport import imports =
-    match import with 
-    | Some i -> if List.contains i imports then imports else imports @ [i]
+let appendImport imports = function
+    | Some import -> if List.contains import imports then imports else imports @ [import]
     | None -> imports
 
 let lines imports code namesp typeName =
-    (if List.isEmpty imports 
-     then [] 
-     else (List.map (sprintf "using %s;") imports) @ [""; ""; ""]) @
+    (if List.isEmpty imports then [] 
+     else List.map (sprintf "using %s;") imports @ [""; ""; ""]) @
     (match namesp with 
      | Some n -> [sprintf "namespace %s" n; "{"] @ List.map (sprintf "    %s") (code typeName) @ ["}"] 
      | None -> code typeName)
 
-let writeFile className imports code folder namesp typeName = 
-    let contents = lines imports code namesp typeName
-    File.WriteAllLines (Path.Combine (folder, className typeName + ".cs"), List.toArray contents)
+let writeFile className imports code typeName namesp folder = 
+    File.WriteAllLines (Path.Combine (folder, className typeName + ".cs"), List.toArray (lines imports code namesp typeName))
 
 
 
@@ -38,7 +34,7 @@ module Events =
         "[Serializable]"
         sprintf "public class %s : UnityEvent<%s> { }" (className typeName) typeName]
 
-    let writeFile folder namesp typeNamesp = writeFile className (appendImport typeNamesp imports) code folder namesp
+    let writeFile typeNamesp = writeFile className (appendImport imports typeNamesp) code
 
 
 
@@ -51,7 +47,7 @@ module Signals =
         sprintf "[CreateAssetMenu(menuName = \"Signals/%s\")]" (className typeName)
         sprintf "public class %s : Signal<%s, %s> { }" (className typeName) typeName (Events.className typeName)]
 
-    let writeFile folder namesp typeNamesp = writeFile className (appendImport typeNamesp imports) code folder namesp
+    let writeFile typeNamesp = writeFile className (appendImport imports typeNamesp) code
 
 
 
@@ -70,7 +66,7 @@ module SignalEditors =
         "    }"
         "}"]
 
-    let writeFile folder namesp typeNamesp = writeFile className (appendImport typeNamesp imports) code folder namesp
+    let writeFile typeNamesp = writeFile className (appendImport imports typeNamesp) code
 
 
 
@@ -83,7 +79,7 @@ module SignalListeners =
         sprintf "[AddComponentMenu(\"Signals/%s\")]" (className typeName)
         sprintf "public class %s : SignalListener<%s, %s, %s> { }" (className typeName) typeName (Events.className typeName) (Signals.className typeName)]
 
-    let writeFile folder namesp typeNamesp = writeFile className (appendImport typeNamesp imports) code folder namesp
+    let writeFile typeNamesp = writeFile className (appendImport imports typeNamesp) code
 
 
 
@@ -96,11 +92,11 @@ module ValueReferences =
         "[Serializable]"
         sprintf "public class %s : ValueReference<%s, %s, %s>" (className typeName) typeName (Events.className typeName) (Signals.className typeName)
         "{"
-        sprintf "public %s() { }" (className typeName)
-        sprintf "public %s(%s localValue) : base(localValue) { }" (className typeName) typeName
+        sprintf "    public %s() { }" (className typeName)
+        sprintf "    public %s(%s localValue) : base(localValue) { }" (className typeName) typeName
         "}"]
 
-    let writeFile folder namesp typeNamesp = writeFile className (appendImport typeNamesp imports) code folder namesp
+    let writeFile typeNamesp = writeFile className (appendImport imports typeNamesp) code
 
 
 
@@ -117,10 +113,10 @@ module ValueReferenceDrawers =
 
 
 
-let writeFiles folder namesp typeNamesp typeName =
-    Events.writeFile folder namesp typeNamesp typeName
-    Signals.writeFile folder namesp typeNamesp typeName
-    SignalEditors.writeFile folder namesp typeNamesp typeName
-    SignalListeners.writeFile folder namesp typeNamesp typeName
-    ValueReferences.writeFile folder namesp typeNamesp typeName
-    ValueReferenceDrawers.writeFile folder namesp typeName
+let writeFiles typeNamesp typeName namesp folder =
+    Events.writeFile typeNamesp typeName namesp folder
+    Signals.writeFile typeNamesp typeName namesp folder
+    SignalEditors.writeFile typeNamesp typeName namesp folder
+    SignalListeners.writeFile typeNamesp typeName namesp folder
+    ValueReferences.writeFile typeNamesp typeName namesp folder
+    ValueReferenceDrawers.writeFile typeName namesp folder
