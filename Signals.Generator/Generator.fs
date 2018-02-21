@@ -10,6 +10,11 @@ let firstToUpper text =
     then text
     else Char.ToString (Char.ToUpper text.[0]) + if String.length text > 1 then text.Substring(1) else String.Empty
 
+let appendImport import imports =
+    match import with 
+    | Some i -> if List.contains i imports then imports else imports @ [i]
+    | None -> imports
+
 let lines imports code namesp typeName =
     (if List.isEmpty imports 
      then [] 
@@ -33,12 +38,7 @@ module Events =
         "[Serializable]"
         sprintf "public class %s : UnityEvent<%s> { }" (className typeName) typeName]
 
-    let writeFile folder namesp typeNamesp typeName = 
-        let imports =
-            match typeNamesp with 
-            | Some n -> if List.contains n imports then imports else imports @ [n]
-            | None -> imports
-        writeFile className imports code folder namesp typeName
+    let writeFile folder namesp typeNamesp = writeFile className (appendImport typeNamesp imports) code folder namesp
 
 
 
@@ -51,12 +51,7 @@ module Signals =
         sprintf "[CreateAssetMenu(menuName = \"Signals/%s\")]" (className typeName)
         sprintf "public class %s : Signal<%s, %s> { }" (className typeName) typeName (Events.className typeName)]
 
-    let writeFile folder namesp typeNamesp typeName = 
-        let imports =
-            match typeNamesp with 
-            | Some n -> if List.contains n imports then imports else imports @ [n]
-            | None -> imports
-        writeFile className imports code folder namesp typeName
+    let writeFile folder namesp typeNamesp = writeFile className (appendImport typeNamesp imports) code folder namesp
 
 
 
@@ -75,12 +70,7 @@ module SignalEditors =
         "    }"
         "}"]
 
-    let writeFile folder namesp typeNamesp typeName = 
-        let imports =
-            match typeNamesp with 
-            | Some n -> if List.contains n imports then imports else imports @ [n]
-            | None -> imports
-        writeFile className imports code folder namesp typeName
+    let writeFile folder namesp typeNamesp = writeFile className (appendImport typeNamesp imports) code folder namesp
 
 
 
@@ -93,12 +83,7 @@ module SignalListeners =
         sprintf "[AddComponentMenu(\"Signals/%s\")]" (className typeName)
         sprintf "public class %s : SignalListener<%s, %s, %s> { }" (className typeName) typeName (Events.className typeName) (Signals.className typeName)]
 
-    let writeFile folder namesp typeNamesp typeName = 
-        let imports =
-            match typeNamesp with 
-            | Some n -> if List.contains n imports then imports else imports @ [n]
-            | None -> imports
-        writeFile className imports code folder namesp typeName
+    let writeFile folder namesp typeNamesp = writeFile className (appendImport typeNamesp imports) code folder namesp
 
 
 
@@ -115,12 +100,7 @@ module ValueReferences =
         sprintf "public %s(%s localValue) : base(localValue) { }" (className typeName) typeName
         "}"]
 
-    let writeFile folder namesp typeNamesp typeName = 
-        let imports =
-            match typeNamesp with 
-            | Some n -> if List.contains n imports then imports else imports @ [n]
-            | None -> imports
-        writeFile className imports code folder namesp typeName
+    let writeFile folder namesp typeNamesp = writeFile className (appendImport typeNamesp imports) code folder namesp
 
 
 
